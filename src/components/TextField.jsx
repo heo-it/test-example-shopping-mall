@@ -41,6 +41,7 @@ export default function TextField({
   return (
     <input
       type="text"
+      role="input"
       className={cn('text-input', className)}
       onChange={changeValue}
       onFocus={focus}
