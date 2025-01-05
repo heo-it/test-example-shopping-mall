@@ -27,11 +27,58 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-it('로딩이 완료된 경우 상품 리스트가 제대로 모두 노출된다', async () => {});
+it('로딩이 완료된 경우 상품 리스트가 제대로 모두 노출된다', async () => {
+  await render(<ProductList limit={PRODUCT_PAGE_LIMIT} />);
 
-it('보여줄 상품 리스트가 더 있는 경우 show more 버튼이 노출되며, 버튼을 누르면 상품 리스트를 더 가져온다.', async () => {});
+  // 일정 시간 동안 재시도를 함, Promise 반환
+  // 바로 오류를 내지 않고 API 응답이 완료될 때까지 기다렸다가 검증
+  const productCards = await screen.findAllByTestId('product-card'); // data-testid 속성 지정
 
-it('보여줄 상품 리스트가 없는 경우 show more 버튼이 노출되지 않는다.', async () => {});
+  expect(productCards).toHaveLength(5);
+
+  productCards.forEach((el, index) => {
+    const productCard = within(el);
+    const product = data.products[index];
+
+    expect(productCard.getByText(product.title)).toBeInTheDocument();
+    expect(productCard.getByText(product.category.name)).toBeInTheDocument();
+    expect(
+      productCard.getByText(formatPrice(product.price)),
+    ).toBeInTheDocument();
+    expect(
+      productCard.getByRole('button', { name: '장바구니' }),
+    ).toBeInTheDocument();
+    expect(
+      productCard.getByRole('button', { name: '구매' }),
+    ).toBeInTheDocument();
+  });
+});
+
+it('보여줄 상품 리스트가 더 있는 경우 show more 버튼이 노출되며, 버튼을 누르면 상품 리스트를 더 가져온다.', async () => {
+  const { user } = await render(<ProductList limit={PRODUCT_PAGE_LIMIT} />);
+
+  await screen.findAllByTestId('product-card');
+
+  const showMoreButton = screen.getByRole('button', { name: 'Show more' });
+  expect(showMoreButton).toBeInTheDocument();
+
+  await user.click(showMoreButton);
+
+  expect(await screen.findAllByTestId('product-card')).toHaveLength(
+    PRODUCT_PAGE_LIMIT * 2,
+  );
+});
+
+it('보여줄 상품 리스트가 없는 경우 show more 버튼이 노출되지 않는다.', async () => {
+  // 전체 수보다 limit을 크게 해서 테스트
+  await render(<ProductList limit={50} />);
+
+  await screen.findAllByTestId('product-card');
+
+  expect(
+    screen.queryByRole('button', { name: 'Show more' }),
+  ).not.toBeInTheDocument();
+});
 
 describe('로그인 상태일 경우', () => {
   beforeEach(() => {
@@ -39,6 +86,8 @@ describe('로그인 상태일 경우', () => {
   });
 
   it('구매 버튼 클릭시 addCartItem 메서드가 호출되며, "/cart" 경로로 navigate 함수가 호출된다.', async () => {
+    // 통합 테스트 역시 좀 더 큰 범위로 비지니스 로직을 검증할 수 있지만,
+    // 이처럼 다른 페이지의 로직을 검증할 수는 없기 때문에 이러한 모킹 잡업이 필요
     const addCartItemFn = vi.fn();
     mockUseCartStore({ addCartItem: addCartItemFn });
 
