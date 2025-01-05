@@ -21,6 +21,7 @@ const ProductInfoTableRow = ({
   const { id, title, count, images, price } = item;
 
   const handleClickDeleteItem = itemId => () => {
+    // 단위 테스트로 작성하면 스파이 함수로 호출 여부만 검증 가능
     removeCartItem(itemId, user.id);
   };
 
