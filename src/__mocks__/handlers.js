@@ -12,10 +12,15 @@ export const handlers = [
     apiRoutes.categories,
     apiRoutes.couponList,
   ].map(path =>
+    // NOTE: request 쿼리 파라미터에 따라 응답을 변경
+    // http status를 변경하는 것과 같은 다양한 처리 가능
     rest.get(`${API_DOMAIN}${path}`, (_, res, ctx) =>
       res(ctx.status(200), ctx.json(response[path])),
     ),
   ),
+  // NOTE: 테스트 환경에서 상품 목록 조회 API 요청이 실행되면 msw에서 요청을 가로챈다.
+  // products.json에 정의한 상품 목록 모킹 데이터를 페이징 단위로 잘라 API 응답처럼 반환
+  // 테스트 코드에서 항상 동일한 모킹 데이터를 기반으로 원하는 시나리오에 대한 안정성 있는 검증 가능
   rest.get(`${API_DOMAIN}${apiRoutes.products}`, (req, res, ctx) => {
     const data = response[apiRoutes.products];
     const offset = Number(req.url.searchParams.get('offset'));

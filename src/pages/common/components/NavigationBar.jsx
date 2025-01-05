@@ -30,6 +30,9 @@ const NavigationBar = () => {
     Cookies.remove('access_token');
     toggleIsModalOpened();
   };
+  // 유저 데이터를 API 호출해서 가져옴 -> 여러 컴포넌트가 조합된 영역에서 발생 -> 통합 테스트 검증 필요
+  // API 응답 모킹 -> 일관된 테스트 환경 구성 가능
+  // 모든 API 호출을 Tanstack Query에서 담당 -> 설정 해야함
   const { data, remove } = useProfile({
     config: {
       onSuccess: profile => {
