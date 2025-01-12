@@ -10,6 +10,7 @@ import React from 'react';
 import { ALL_CATEGORY_ID } from '@/constants';
 import useCategories from '@/pages/home/hooks/useCategories';
 
+// setCategoryId 액션에 따른 상태 변경이 라디오 UI에 반영되는지 ProductFilter에서 모두 확인 가능
 const CategoryRadioGroup = ({ categoryId, onChangeCategory }) => {
   const { data } = useCategories();
 
