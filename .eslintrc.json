@@ -48,22 +48,20 @@
   "overrides": [
     {
       "files": [
+        "__mocks__/**.js",
         "src/utils/test/**.js",
         "src/**/*.spec.js",
         "src/**/*.spec.jsx"
       ],
       "plugins": ["vitest"],
+      "extends": ["plugin:vitest/recommended"],
       "rules": {
-        "vitest/no-large-snapshots": "error",
-        "vitest/no-identical-title": "off",
         "vitest/expect-expect": "off"
       },
-      "extends": ["plugin:vitest/recommended"],
       "globals": {
         "globalThis": true,
         "describe": true,
         "it": true,
-        "test": true,
         "expect": true,
         "beforeEach": true,
         "afterEach": true,
